@@ -24,6 +24,8 @@ node.default['openvpn']['routes'] = routes.flatten
 key_dir = node["openvpn"]["key_dir"]
 key_size = node["openvpn"]["key"]["size"]
 
+conf_dir = node["openvpn"]["conf_dir"]
+
 package "openvpn" do
   action :install
 end
@@ -34,14 +36,14 @@ directory key_dir do
   mode 0700
 end
 
-directory "/etc/openvpn/easy-rsa" do
+directory "#{conf_dir}/easy-rsa" do
   owner "root"
   group "root"
   mode 0755
 end
 
 %w{openssl.cnf pkitool vars Rakefile}.each do |f|
-  template "/etc/openvpn/easy-rsa/#{f}" do
+  template "#{conf_dir}/easy-rsa/#{f}" do
     source "#{f}.erb"
     owner "root"
     group "root"
@@ -49,7 +51,7 @@ end
   end
 end
 
-template "/etc/openvpn/server.up.sh" do
+template "#{conf_dir}/server.up.sh" do
   source "server.up.sh.erb"
   owner "root"
   group "root"
@@ -113,12 +115,25 @@ bash "openvpn-server-key" do
   not_if { ::File.exists?("#{key_dir}/server.crt") }
 end
 
-template "/etc/openvpn/server.conf" do
+template "#{conf_dir}/server.conf" do
   source "server.conf.erb"
   owner "root"
   group "root"
   mode 0644
   notifies :restart, "service[openvpn]"
+end
+
+case node["platform"]
+  when "smartos"
+    include_recipe "smf"
+    smf 'openvpn' do
+      start_command "openvpn --config #{conf_dir}/server.conf --daemon"
+      start_timeout 60
+      stop_timeout 60
+      manifest_type 'network'
+      working_directory '/var/run'
+      environment 'PATH' => '/opt/local/sbin:/usr/sbin:/usr/bin'
+    end
 end
 
 service "openvpn" do

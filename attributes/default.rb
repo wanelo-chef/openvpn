@@ -25,7 +25,13 @@ default["openvpn"]["subnet"]  = "10.8.0.0"
 default["openvpn"]["netmask"] = "255.255.0.0"
 default["openvpn"]["gateway"] = "vpn.#{node["domain"]}"
 default["openvpn"]["log"]     = "/var/log/openvpn.log"
-default["openvpn"]["key_dir"] = "/etc/openvpn/keys"
+case platform
+when "smartos"
+  default["openvpn"]["conf_dir"] = "/opt/local/etc/openvpn"
+else
+  default["openvpn"]["conf_dir"] = "/etc/openvpn"
+end
+default["openvpn"]["key_dir"] = "#{node["openvpn"]["conf_dir"]}/keys"
 default["openvpn"]["signing_ca_key"]  = "#{node["openvpn"]["key_dir"]}/ca.key"
 default["openvpn"]["signing_ca_cert"] = "#{node["openvpn"]["key_dir"]}/ca.crt"
 default["openvpn"]["routes"] = []

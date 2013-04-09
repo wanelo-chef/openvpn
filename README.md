@@ -44,7 +44,8 @@ These attributes are set by the cookbook by default.
 * `node["openvpn"]["netmask"]` - Netmask for the subnet, default is 255.255.0.0.
 * `node["openvpn"]["gateway"]` - FQDN for the VPN gateway server. Default is `node["fqdn"]`.
 * `node["openvpn"]["log"]` - Server log file. Default /var/log/openvpn.log
-* `node["openvpn"]["key_dir"]` - Location to store keys, certificates and related files. Default `/etc/openvpn/keys`.
+* `node["openvpn"]["conf_dir"]` = Top level directory into which to write configuration files. Depends on platform. Defaults to '/etc' on Linux.
+* `node["openvpn"]["key_dir"]` - Location to store keys, certificates and related files. Default `/keys`.
 * `node["openvpn"]["signing_ca_cert"]` - CA certificate for signing, default `/etc/openvpn/keys/ca.crt`
 * `node["openvpn"]["signing_ca_key"]` - CA key for signing, default `/etc/openvpn/keys/ca.key`
 * `node["openvpn"]["routes"]` - Array of routes to add as `push` statements in the server.conf. Default is empty.

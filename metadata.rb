@@ -9,9 +9,11 @@ version           "1.1.1"
 recipe "openvpn", "Installs and configures openvpn"
 recipe "openvpn::users", "Sets up openvpn cert/configs for users data bag items"
 
-%w{ redhat centos fedora ubuntu debian }.each do |os|
+%w{ redhat centos fedora ubuntu debian smartos }.each do |os|
   supports os
 end
+
+depends 'smf'  ## on SmartOS
 
 attribute "openvpn/local",
   :display_name => "OpenVPN Local",
